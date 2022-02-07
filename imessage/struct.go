@@ -51,9 +51,10 @@ type Message struct {
 	IsEmote        bool
 	IsAudioMessage bool `json:"is_audio_message"`
 
-	ReplyToGUID string   `json:"thread_originator_guid,omitempty"`
-	ReplyToPart int      `json:"thread_originator_part,omitempty"`
-	Tapback     *Tapback `json:"associated_message,omitempty"`
+	ReplyToGUID string    `json:"thread_originator_guid,omitempty"`
+	ReplyToPart int       `json:"thread_originator_part,omitempty"`
+	Tapback     *Tapback  `json:"associated_message,omitempty"`
+	RichLink    *RichLink `json:"rich_link,omitempty"`
 
 	// Deprecated: use attachments array
 	Attachment *Attachment `json:"attachment,omitempty"`
@@ -175,6 +176,41 @@ func (attachment *Attachment) Read() ([]byte, error) {
 		attachment.PathOnDisk = filepath.Join(home, attachment.PathOnDisk[2:])
 	}
 	return ioutil.ReadFile(attachment.PathOnDisk)
+}
+
+type RichLinkCaptionText struct {
+	Text      string `json:"text,omitempty"`
+	TextScale int    `json:"text_scale,omitempty"`
+}
+
+type RichLinkCaptionSection struct {
+	Leading  RichLinkCaptionText `json:"leading,omitempty"`
+	Trailing RichLinkCaptionText `json:"trailing,omitempty"`
+}
+
+type RichLinkCaptionBar struct {
+	AboveTop                RichLinkCaptionSection `json:"above_top,omitempty"`
+	Top                     RichLinkCaptionSection `json:"top,omitempty"`
+	Bottom                  RichLinkCaptionSection `json:"bottom,omitempty"`
+	BelowBottom             RichLinkCaptionSection `json:"below_bottom,omitempty"`
+	LeadingIcon             RichLinkImage          `json:"leading_icon,omitempty"`
+	TrailingIcon            RichLinkImage          `json:"trailing_icon,omitempty"`
+	AdditionalTrailingIcons []RichLinkImage        `json:"additional_trailing_icons,omitempty"`
+}
+
+type RichLinkImage struct {
+	AttachmentIndex int `json:"attachment_index,omitempty"`
+}
+
+type RichLink struct {
+	CaptionBar            RichLinkCaptionBar `json:"caption_bar,omitempty"`
+	MediaTopCaptionBar    RichLinkCaptionBar `json:"media_top_caption_bar,omitempty"`
+	MediaBottomCaptionBar RichLinkCaptionBar `json:"media_bottom_caption_bar,omitempty"`
+	Image                 RichLinkImage      `json:"image,omitempty"`
+	Url                   string             `json:"url,omitempty"`
+	ItemType              string             `json:"item_type,omitempty"`
+	QuotedText            string             `json:"quoted_text,omitempty"`
+	Preliminary           bool               `json:"preliminary,omitempty"`
 }
 
 type ChatInfo struct {
